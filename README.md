@@ -7,7 +7,7 @@ This is a GitHub template for building a mise backend plugin using the vfox-styl
 Backend plugins in mise extend the standard tool plugin system to manage **multiple tools** using the `plugin:tool` format. They're perfect for:
 
 - **Package managers** (npm, pip, cargo, gem)
-- **Tool families** (multiple related tools from one ecosystem) 
+- **Tool families** (multiple related tools from one ecosystem)
 - **Custom installations** that need to manage many tools
 
 Unlike tool plugins that manage one tool, backend plugins can install and manage multiple tools like `npm:prettier`, `npm:eslint`, `cargo:ripgrep`, etc.
@@ -33,9 +33,9 @@ git init
 ### 1. Replace placeholders
 
 Search and replace these placeholders throughout the project:
-- `<BACKEND>` → your backend name (e.g., `npm`, `cargo`, `pip`)
-- `<GITHUB_USER>` → your GitHub username or organization  
-- `<TEST_TOOL>` → a real tool name your backend can install (for testing)
+- `pixi` → your backend name (e.g., `npm`, `cargo`, `pip`)
+- `aleksrutins` → your GitHub username or organization
+- `vcpkg` → a real tool name your backend can install (for testing)
 
 Files to update:
 - `metadata.lua` - Update name, description, author, homepage
@@ -63,13 +63,13 @@ end
 - **Command-based**: Run `npm view <tool> versions`, `pip index versions <tool>`
 - **File-based**: Parse registry files or manifests
 
-#### `hooks/backend_install.lua` 
+#### `hooks/backend_install.lua`
 Installs a specific version of a tool.
 
 ```lua
 function PLUGIN:BackendInstall(ctx)
     local tool = ctx.tool
-    local version = ctx.version  
+    local version = ctx.version
     local install_path = ctx.install_path
     -- Your logic to install the tool
     -- Return: {}
@@ -105,7 +105,7 @@ Your backend may need to handle different operating systems:
 -- Available in all hooks via RUNTIME object
 if RUNTIME.osType == "Darwin" then
     -- macOS-specific logic
-elseif RUNTIME.osType == "Linux" then  
+elseif RUNTIME.osType == "Linux" then
     -- Linux-specific logic
 elseif RUNTIME.osType == "Windows" then
     -- Windows-specific logic
@@ -119,17 +119,17 @@ Provide meaningful error messages:
 ```lua
 function PLUGIN:BackendListVersions(ctx)
     local tool = ctx.tool
-    
+
     if not tool or tool == "" then
         error("Tool name cannot be empty")
     end
-    
+
     -- ... your implementation ...
-    
+
     if #versions == 0 then
         error("No versions found for " .. tool)
     end
-    
+
     return {versions = versions}
 end
 ```
@@ -149,22 +149,22 @@ This sets up automatic linting and formatting on git commits.
 
 1. Link your plugin for development:
 ```bash
-mise plugin link --force <BACKEND> .
+mise plugin link --force pixi .
 ```
 
 2. Test version listing:
 ```bash
-mise ls-remote <BACKEND>:<some-tool>
+mise ls-remote pixi:<some-tool>
 ```
 
 3. Test installation:
 ```bash
-mise install <BACKEND>:<some-tool>@latest
+mise install pixi:<some-tool>@latest
 ```
 
 4. Test execution:
 ```bash
-mise exec <BACKEND>:<some-tool>@latest -- <some-tool> --version
+mise exec pixi:<some-tool>@latest -- <some-tool> --version
 ```
 
 5. Run tests:
@@ -187,7 +187,7 @@ mise run ci
 This template uses [hk](https://hk.jdx.dev) for modern linting and pre-commit hooks:
 
 - **Automatic formatting**: `stylua` formats Lua code
-- **Static analysis**: `luacheck` catches Lua issues  
+- **Static analysis**: `luacheck` catches Lua issues
 - **GitHub Actions linting**: `actionlint` validates workflows
 - **Pre-commit hooks**: Runs all checks automatically on git commit
 
@@ -201,7 +201,7 @@ hk fix        # Run linters and auto-fix issues
 
 Enable debug output:
 ```bash
-mise --debug install <BACKEND>:<tool>@<version>
+mise --debug install pixi:<tool>@<version>
 ```
 
 ## Files
@@ -229,7 +229,7 @@ function PLUGIN:BackendListVersions(ctx)
     return {versions = json.decode(result)}
 end
 
--- backend_install.lua  
+-- backend_install.lua
 function PLUGIN:BackendInstall(ctx)
     local cmd = require("cmd")
     cmd.exec("mypm install " .. ctx.tool .. "@" .. ctx.version .. " --prefix " .. ctx.install_path)
@@ -265,13 +265,13 @@ end
 function PLUGIN:BackendInstall(ctx)
     local platform = RUNTIME.osType:lower()
     local arch = RUNTIME.archType
-    local url = "https://github.com/owner/" .. ctx.tool .. "/releases/download/v" .. ctx.version .. 
+    local url = "https://github.com/owner/" .. ctx.tool .. "/releases/download/v" .. ctx.version ..
                 "/" .. ctx.tool .. "-" .. platform .. "-" .. arch .. ".tar.gz"
-    
+
     local http = require("http")
     local temp_file = ctx.install_path .. "/tool.tar.gz"
     http.download({url = url, output = temp_file})
-    
+
     local cmd = require("cmd")
     cmd.exec("cd " .. ctx.install_path .. " && tar -xzf tool.tar.gz")
     cmd.exec("rm " .. temp_file)
@@ -291,7 +291,7 @@ end
 |----------|------|-------------|---------|
 | `ctx.tool` | string | Tool name | `"prettier"` |
 
-### BackendInstall and BackendExecEnv Context  
+### BackendInstall and BackendExecEnv Context
 | Variable | Type | Description | Example |
 |----------|------|-------------|---------|
 | `ctx.tool` | string | Tool name | `"prettier"` |
@@ -303,7 +303,7 @@ end
 Backend plugins have access to these built-in modules:
 
 - `cmd` - Execute shell commands
-- `http` - HTTP client for downloads and API calls  
+- `http` - HTTP client for downloads and API calls
 - `json` - JSON parsing and encoding
 - `file` - File system operations
 

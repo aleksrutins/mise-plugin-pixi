@@ -17,10 +17,11 @@ function PLUGIN:BackendListVersions(ctx)
     local json = require("json")
 
     -- Replace with your backend's API endpoint
-    local api_url = "https://api.<BACKEND>.org/packages/" .. tool .. "/versions"
+    local api_url = "https://api.pixi.org/packages/" .. tool .. "/versions"
 
     local resp, err = http.get({
         url = api_url,
+
         -- headers = { ["Authorization"] = "Bearer " .. token } -- if needed
     })
 
@@ -47,7 +48,7 @@ function PLUGIN:BackendListVersions(ctx)
     local cmd = require("cmd")
 
     -- Replace with your backend's command to list versions
-    local command = "<BACKEND> search " .. tool .. " --versions"
+    local command = "pixi search " .. tool .. " --versions"
     local result = cmd.exec(command)
 
     if not result or result:match("error") then
@@ -66,7 +67,7 @@ function PLUGIN:BackendListVersions(ctx)
     local file = require("file")
 
     -- Replace with path to your backend's registry or manifest
-    local registry_path = "/path/to/<BACKEND>/registry/" .. tool .. ".json"
+    local registry_path = "/path/to/pixi/registry/" .. tool .. ".json"
 
     if not file.exists(registry_path) then
         error("Tool " .. tool .. " not found in registry")
