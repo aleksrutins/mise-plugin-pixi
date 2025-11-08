@@ -25,6 +25,6 @@ PLUGIN = { -- luacheck: ignore
     notes = {
         -- "Requires pixi to be installed on your system",
         -- "This plugin manages tools from the pixi ecosystem"
-        "Requires Pixi to be installed; this can be done with `mise use pixi`."
+        "Requires Pixi to be installed; this can be done with `mise use pixi`.",
     },
 }

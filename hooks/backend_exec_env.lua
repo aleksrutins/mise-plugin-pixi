@@ -3,13 +3,14 @@
 -- Documentation: https://mise.jdx.dev/backend-plugin-development.html#backendexecenv
 
 function PLUGIN:BackendExecEnv(ctx)
+    local file = require("file")
     local install_path = ctx.install_path
+    local env_path = file.join_path(install_path, ".pixi", "envs", "default")
     local tool = ctx.tool
     local version = ctx.version
 
     -- Basic PATH setup (most common case)
-    local file = require("file")
-    local bin_path = file.join_path(install_path, "bin")
+    local bin_path = file.join_path(env_path, "bin")
 
     local env_vars = {
         -- Add tool's bin directory to PATH
@@ -52,25 +53,19 @@ function PLUGIN:BackendExecEnv(ctx)
     table.insert(env_vars, {key = "PATH", value = cargo_bin})
     --]]
 
-    -- Example: Library paths for compiled tools
-    --[[
-    local lib_path = file.join_path(install_path, "lib")
-    local lib64_path = file.join_path(install_path, "lib64")
+    local lib_path = file.join_path(env_path, "lib")
+    local lib64_path = file.join_path(env_path, "lib64")
 
     if RUNTIME.osType == "Linux" then
-        table.insert(env_vars, {key = "LD_LIBRARY_PATH", value = lib_path})
-        table.insert(env_vars, {key = "LD_LIBRARY_PATH", value = lib64_path})
+        table.insert(env_vars, { key = "LD_LIBRARY_PATH", value = lib_path })
+        table.insert(env_vars, { key = "LD_LIBRARY_PATH", value = lib64_path })
     elseif RUNTIME.osType == "Darwin" then
-        table.insert(env_vars, {key = "DYLD_LIBRARY_PATH", value = lib_path})
+        table.insert(env_vars, { key = "DYLD_LIBRARY_PATH", value = lib_path })
     end
-    --]]
 
-    -- Example: Include paths for development tools
-    --[[
-    local include_path = file.join_path(install_path, "include")
-    table.insert(env_vars, {key = "C_INCLUDE_PATH", value = include_path})
-    table.insert(env_vars, {key = "CPLUS_INCLUDE_PATH", value = include_path})
-    --]]
+    local include_path = file.join_path(env_path, "include")
+    table.insert(env_vars, { key = "C_INCLUDE_PATH", value = include_path })
+    table.insert(env_vars, { key = "CPLUS_INCLUDE_PATH", value = include_path })
 
     -- Example: Manual pages path
     --[[

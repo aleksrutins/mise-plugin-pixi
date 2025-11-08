@@ -17,11 +17,22 @@ function PLUGIN:BackendListVersions(ctx)
     local json = require("json")
 
     -- Replace with your backend's API endpoint
-    local api_url = "https://api.pixi.org/packages/" .. tool .. "/versions"
+    local api_url = "https://api.prefix.dev/api/graphql"
 
-    local resp, err = http.get({
+    local resp, err = http.post({
         url = api_url,
+        body = [[
+            {
+                package(channelName: "conda-forge", name: "]] .. tool .. [[") {
+                    variants {
+                      page {
+                        version
+                      }
+                    }
+                }
 
+            }
+        ]]
         -- headers = { ["Authorization"] = "Bearer " .. token } -- if needed
     })
 
@@ -37,9 +48,9 @@ function PLUGIN:BackendListVersions(ctx)
     local versions = {}
 
     -- Parse versions from API response (adjust based on your API structure)
-    if data.versions then
-        for _, version in ipairs(data.versions) do
-            table.insert(versions, version)
+    if data.package.variants.page then
+        for _, version in ipairs(data.package.variants.page) do
+            table.insert(versions, version.version)
         end
     end
 
